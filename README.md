@@ -1,5 +1,5 @@
 # Laboratorio 4
-
+# Punto 1
 # Conexión por consola a un switch Cisco 2960
 
 ## 1. Introducción  
@@ -162,6 +162,69 @@ ssh pi@192.168.1.11
 ```
 
 Usar `show mac address-table` en el switch para confirmar el puerto asociado.
+
+### 4.8 Actividades prácticas — Paso a paso
+A continuación los pasos concretos, listos para ejecutar.
+
+#### Actividad 1 — Probar ping entre dispositivos
+1. Desde el switch (modo privilegiado):
+```text
+sw-lab# ping 192.168.1.10   # Dispositivo1
+sw-lab# ping 192.168.1.11   # Dispositivo2 (Raspberry Pi)
+sw-lab# ping 192.168.1.12   # Dispositivo3
+```
+2. Desde Dispositivo1/Dispositivo3/Raspberry (en terminal):
+```bash
+ping -c 4 192.168.1.2    # ping al switch
+ping -c 4 192.168.1.11   # ping entre hosts
+```
+3. Si no responde, comprobar `show interfaces status` y `show mac address-table dynamic` en el switch, y `ip addr` en el host.
+
+#### Actividad 2 — Explorar con nmap
+1. Escaneo de hosts activos (ping sweep):
+```bash
+sudo nmap -sn 192.168.1.0/24
+```
+2. Identificar servicios en un host específico (ej. Raspberry):
+```bash
+sudo nmap -sV 192.168.1.11
+```
+3. Escaneo rápido de puertos comunes en la red:
+```bash
+sudo nmap --top-ports 20 192.168.1.0/24
+```
+
+#### Actividad 3 — Revisar IP, puerta de enlace, máscara, VLAN y CIDR
+1. En hosts Linux (Ubuntu / Raspberry):
+```bash
+ip addr show
+ip route show
+```
+2. En el switch, revisar VLAN y puerto:
+```text
+sw-lab# show vlan brief
+sw-lab# show interfaces GigabitEthernet1/0/2 switchport
+```
+3. Interpretación rápida: si el host muestra `inet 192.168.1.11/24`, su red es `192.168.1.0/24`, máscara `255.255.255.0` y la puerta de enlace suele ser `192.168.1.1`.
+
+#### Actividad 4 — Transferir archivos con `scp`
+1. Asegurar que SSH está activo en el destino (Dispositivo3 o Raspberry):
+```bash
+sudo systemctl status ssh
+```
+2. Enviar archivo desde el monitor (Ubuntu) al destino:
+```bash
+scp /ruta/local/archivo.txt usuario@192.168.1.12:/ruta/remota/
+# Ejemplo:
+scp ~/prueba.txt pi@192.168.1.11:/home/pi/
+```
+3. Verificar en destino:
+```bash
+ssh usuario@192.168.1.12 'ls -l /ruta/remota/archivo.txt && md5sum /ruta/remota/archivo.txt'
+md5sum ~/prueba.txt  # en origen
+```
+4. Solución de problemas comunes: comprobar `ping`, `nmap -p 22`, y estado del servicio SSH; revisar permisos y rutas.
+
 
 ## 5. Problemas encontrados  
 - Lectura de `dmesg` sin permisos → usar `sudo`.  
