@@ -300,3 +300,128 @@ show vlan brief
 show ip interface brief
 ping 192.168.1.10
 ```
+
+#Punto 2
+##1. Introducción
+
+QEMU (Quick Emulator) es una herramienta de virtualización y emulación de hardware ampliamente utilizada en entornos académicos, de investigación y administración de sistemas. Ubuntu 24.04.3 LTS incorpora QEMU versión 8.2.2, la cual ofrece compatibilidad con arquitecturas múltiples y soporte para aceleración mediante KVM.
+Este documento describe el proceso completo para habilitar los repositorios correctos, instalar QEMU y crear máquinas virtuales para distintos sistemas operativos.
+
+##2. Activación de repositorios en Ubuntu 24.04
+
+Ubuntu 24.04 reemplaza el archivo clásico /etc/apt/sources.list por el archivo moderno:
+
+```
+/etc/apt/sources.list.d/ubuntu.sources
+```
+
+Fue necesario habilitar los componentes donde reside QEMU. Se editó el archivo para asegurar que la línea Components incluyera:
+```makefile
+Components: main universe multiverse restricted
+```
+
+Posteriormente se actualizó la lista de paquetes con:
+```bash
+sudo apt update
+```
+##3. Instalación de QEMU, KVM y herramientas adicionales
+
+Se instalaron los paquetes principales mediante:
+```bash
+sudo apt install qemu-system qemu-utils qemu-kvm virt-manager
+```
+
+La instalación fue exitosa y el sistema confirmó que se utilizaba la versión:
+```
+QEMU emulator version 8.2.2
+```
+
+Opcionalmente se recomendó verificar módulos del kernel:
+```bash
+lsmod | grep kvm
+```
+
+Y añadir al usuario al grupo libvirt si se pretende utilizar herramientas gráficas:
+```bash
+sudo usermod -aG libvirt $USER
+```
+##4. Preparación del entorno para máquinas virtuales
+
+Se creó un directorio dedicado para las máquinas:
+```bash
+mkdir -p ~/vms
+cd ~/vms
+```
+
+Se definió una plantilla base aplicable a distintos sistemas operativos:
+```bash
+qemu-system-x86_64 \
+  -enable-kvm \
+  -m 2048 \
+  -smp 2 \
+  -cpu host \
+  -hda DISCO.qcow2 \
+  -cdrom ISO_DEL_SISTEMA.iso \
+  -boot d
+```
+
+Los parámetros permiten asignar memoria (RAM), núcleos de CPU, disco en formato QCOW2 y una imagen ISO de instalación.
+
+##5. Creación de máquinas virtuales específicas
+###5.1 Ubuntu
+```bash
+qemu-img create -f qcow2 ubuntu.qcow2 20G
+
+qemu-system-x86_64 \
+  -enable-kvm \
+  -m 2048 \
+  -smp 2 \
+  -cpu host \
+  -hda ubuntu.qcow2 \
+  -cdrom ubuntu-24.04-live-server-amd64.iso \
+  -boot d
+```
+###5.2 CentOS (o derivados como Rocky/AlmaLinux)
+```bash
+qemu-img create -f qcow2 centos.qcow2 20G
+
+qemu-system-x86_64 \
+  -enable-kvm \
+  -m 2048 \
+  -smp 2 \
+  -cpu host \
+  -hda centos.qcow2 \
+  -cdrom CentOS-Stream-9-latest-x86_64-dvd1.iso \
+  -boot d
+```
+###5.3 Alpine Linux
+```bash
+qemu-img create -f qcow2 alpine.qcow2 4G
+
+qemu-system-x86_64 \
+  -enable-kvm \
+  -m 512 \
+  -smp 1 \
+  -cpu host \
+  -hda alpine.qcow2 \
+  -cdrom alpine-standard-3.20.0-x86_64.iso \
+  -boot d
+```
+###5.4 Scientific Linux
+```bash
+qemu-img create -f qcow2 scientific.qcow2 20G
+
+qemu-system-x86_64 \
+  -enable-kvm \
+  -m 2048 \
+  -smp 2 \
+  -cpu host \
+  -hda scientific.qcow2 \
+  -cdrom SL-7.9-x86_64-DVD.iso \
+  -boot d
+```
+##6. Conclusión
+
+A partir de la habilitación correcta de repositorios en Ubuntu 24.04.3 LTS fue posible instalar QEMU 8.2.2 junto con KVM y herramientas asociadas. Los procedimientos descritos permiten la creación y ejecución de máquinas virtuales para múltiples sistemas operativos de forma directa, flexible y reproducible.
+
+Este entorno es adecuado para fines académicos, pruebas de laboratorio, investigación y virtualización ligera sin depender necesariamente de herramientas gráficas.
