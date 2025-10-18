@@ -301,13 +301,13 @@ show ip interface brief
 ping 192.168.1.10
 ```
 
-#Punto 2
-##1. Introducción
+# Punto 2
+## 1. Introducción
 
 QEMU (Quick Emulator) es una herramienta de virtualización y emulación de hardware ampliamente utilizada en entornos académicos, de investigación y administración de sistemas. Ubuntu 24.04.3 LTS incorpora QEMU versión 8.2.2, la cual ofrece compatibilidad con arquitecturas múltiples y soporte para aceleración mediante KVM.
 Este documento describe el proceso completo para habilitar los repositorios correctos, instalar QEMU y crear máquinas virtuales para distintos sistemas operativos.
 
-##2. Activación de repositorios en Ubuntu 24.04
+## 2. Activación de repositorios en Ubuntu 24.04
 
 Ubuntu 24.04 reemplaza el archivo clásico /etc/apt/sources.list por el archivo moderno:
 
@@ -324,7 +324,7 @@ Posteriormente se actualizó la lista de paquetes con:
 ```bash
 sudo apt update
 ```
-##3. Instalación de QEMU, KVM y herramientas adicionales
+## 3. Instalación de QEMU, KVM y herramientas adicionales
 
 Se instalaron los paquetes principales mediante:
 ```bash
@@ -345,7 +345,7 @@ Y añadir al usuario al grupo libvirt si se pretende utilizar herramientas gráf
 ```bash
 sudo usermod -aG libvirt $USER
 ```
-##4. Preparación del entorno para máquinas virtuales
+## 4. Preparación del entorno para máquinas virtuales
 
 Se creó un directorio dedicado para las máquinas:
 ```bash
@@ -367,8 +367,8 @@ qemu-system-x86_64 \
 
 Los parámetros permiten asignar memoria (RAM), núcleos de CPU, disco en formato QCOW2 y una imagen ISO de instalación.
 
-##5. Creación de máquinas virtuales específicas
-###5.1 Ubuntu
+## 5. Creación de máquinas virtuales específicas
+### 5.1 Ubuntu
 ```bash
 qemu-img create -f qcow2 ubuntu.qcow2 20G
 
@@ -381,7 +381,7 @@ qemu-system-x86_64 \
   -cdrom ubuntu-24.04-live-server-amd64.iso \
   -boot d
 ```
-###5.2 CentOS (o derivados como Rocky/AlmaLinux)
+### 5.2 CentOS (o derivados como Rocky/AlmaLinux)
 ```bash
 qemu-img create -f qcow2 centos.qcow2 20G
 
@@ -394,7 +394,7 @@ qemu-system-x86_64 \
   -cdrom CentOS-Stream-9-latest-x86_64-dvd1.iso \
   -boot d
 ```
-###5.3 Alpine Linux
+### 5.3 Alpine Linux
 ```bash
 qemu-img create -f qcow2 alpine.qcow2 4G
 
@@ -407,7 +407,7 @@ qemu-system-x86_64 \
   -cdrom alpine-standard-3.20.0-x86_64.iso \
   -boot d
 ```
-###5.4 Scientific Linux
+### 5.4 Scientific Linux
 ```bash
 qemu-img create -f qcow2 scientific.qcow2 20G
 
@@ -420,7 +420,7 @@ qemu-system-x86_64 \
   -cdrom SL-7.9-x86_64-DVD.iso \
   -boot d
 ```
-##6. Conclusión
+## 6. Conclusión
 
 A partir de la habilitación correcta de repositorios en Ubuntu 24.04.3 LTS fue posible instalar QEMU 8.2.2 junto con KVM y herramientas asociadas. Los procedimientos descritos permiten la creación y ejecución de máquinas virtuales para múltiples sistemas operativos de forma directa, flexible y reproducible.
 
